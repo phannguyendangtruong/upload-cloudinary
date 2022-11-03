@@ -35,28 +35,22 @@ public class RestController {
 	
 	@PostMapping("/product")
 	public List<String> add(@RequestParam(value = "file", required = false) List<MultipartFile> fi) throws IOException {
-		List<String> urlPath = new ArrayList<String>();
-		// File folder = new File("Files");
-		// folder.mkdir();
-		// if(fi == null || fi.size() == 20){
-		// 	return urlPath;
-		// }
-		// folder.mkdir();
-		// if(saveLocal(fi)){
-		// 	urlPath = upLoadServer(fi);
-		// }else{
-		// 	return urlPath;
-		// }
-		// deleteFile();
-		// urlPath = saveFile(fi);
 		return this.saveFile(fi);
 	}
 
 	public List<String> saveFile(List<MultipartFile> fi) throws IOException{
-		saveLocal(fi);
-		List<String> urlPath = upLoadServer(fi);
+		List<String> urlPath = new ArrayList();
+		File folder = new File("Files");
+		try{
+			folder.mkdir();		
+			saveLocal(fi);
+			urlPath = upLoadServer(fi);
+			deleteFile();
+		}catch(Exception e){
+			folder.delete();
+			return urlPath;
+		}
 		return urlPath;
-
 	}
 
 	public void saveLocal(List<MultipartFile> fi) throws IOException {
