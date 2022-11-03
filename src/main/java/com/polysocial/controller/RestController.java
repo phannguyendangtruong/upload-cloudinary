@@ -36,22 +36,30 @@ public class RestController {
 	@PostMapping("/product")
 	public List<String> add(@RequestParam(value = "file", required = false) List<MultipartFile> fi) throws IOException {
 		List<String> urlPath = new ArrayList<String>();
-		File folder = new File("Files");
-		folder.mkdir();
-		if(fi == null || fi.size() == 20){
-			return urlPath;
-		}
-		folder.mkdir();
-		if(saveLocal(fi)){
-			urlPath = upLoadServer(fi);
-		}else{
-			return urlPath;
-		}
-		deleteFile();
-		return urlPath;
+		// File folder = new File("Files");
+		// folder.mkdir();
+		// if(fi == null || fi.size() == 20){
+		// 	return urlPath;
+		// }
+		// folder.mkdir();
+		// if(saveLocal(fi)){
+		// 	urlPath = upLoadServer(fi);
+		// }else{
+		// 	return urlPath;
+		// }
+		// deleteFile();
+		// urlPath = saveFile(fi);
+		return this.saveFile(fi);
 	}
 
-	public Boolean saveLocal(List<MultipartFile> fi) throws IOException {
+	public List<String> saveFile(List<MultipartFile> fi) throws IOException{
+		saveLocal(fi);
+		List<String> urlPath = upLoadServer(fi);
+		return urlPath;
+
+	}
+
+	public void saveLocal(List<MultipartFile> fi) throws IOException {
 		for (int i = 0; i < fi.size(); i++) {
 			files file = new files();
 			file.setFile(fi.get(i));
@@ -63,11 +71,9 @@ public class RestController {
 				Path filePath = uploadPath.resolve(fName);
 				Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING); // luu file local
 			} catch (IOException ioe) {
-				return false;
+				return ;
 			}
 		}
-
-		return true;
 	}
 
 	public List<String> upLoadServer(List<MultipartFile> fi) {
