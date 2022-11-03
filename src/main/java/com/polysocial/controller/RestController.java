@@ -32,21 +32,22 @@ public class RestController {
 	@Autowired
 	private Cloudinary cloudinary;
 
-
+	
 	@PostMapping("/product")
 	public List<String> add(@RequestParam(value = "file", required = false) List<MultipartFile> fi) throws IOException {
 		List<String> urlPath = new ArrayList<String>();
-		if(fi == null){
+		File folder = new File("Files");
+		folder.mkdir();
+		if(fi == null || fi.size() == 20){
 			return urlPath;
 		}
-		File folder = new File("Files");
 		folder.mkdir();
 		if(saveLocal(fi)){
 			urlPath = upLoadServer(fi);
-			folder.delete();
 		}else{
 			return urlPath;
 		}
+		deleteFile();
 		return urlPath;
 	}
 
@@ -65,6 +66,7 @@ public class RestController {
 				return false;
 			}
 		}
+
 		return true;
 	}
 
@@ -112,7 +114,19 @@ public class RestController {
 				e.printStackTrace();
 			}
 		}
+		
 		return urlPath;
 	}
 
+	void deleteFile(){
+		Path filePath = Paths.get("Files");
+		if(filePath.toFile().exists()) {
+			File[] files = filePath.toFile().listFiles();
+			for(File file : files) {
+				file.delete();
+			}
+		}
+	}
 }
+
+
